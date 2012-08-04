@@ -6,8 +6,9 @@ type Calculator Peg {
 
 expression <- open_p operation value value close_p !.
 
-operation <- ( '+' / '-' / '*' / '/' ) s
-value <- < [0-9]* > s
+operation <- ( '+' / '-' / '*' / '/' ) s { println("operation") }
+value <- < [0-9]* > s { println("pushval")
+	machine.PushVal(to_int(buffer[begin:end])) }
 open_p <- '(' s
 close_p <- ')' s
 s <- ( ' ' )*

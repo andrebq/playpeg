@@ -22,6 +22,7 @@ const (
 	Ruleclose_p
 	Rules
 	RulePegText
+	RuleAction0
 
 	RulePre_
 	Rule_In_
@@ -37,6 +38,7 @@ var Rul3s = [...]string{
 	"close_p",
 	"s",
 	"PegText",
+	"Action0",
 
 	"Pre_",
 	"_In_",
@@ -538,7 +540,7 @@ func (t *tokens32) Expand(index int) TokenTree {
 
 type Calculator struct {
 	Buffer string
-	rules  [8]func() bool
+	rules  [9]func() bool
 	Parse  func(rule ...int) error
 	Reset  func()
 	TokenTree
@@ -605,6 +607,20 @@ func (p *Calculator) PrintSyntaxTree() {
 
 func (p *Calculator) Highlighter() {
 	p.TokenTree.PrintSyntax()
+}
+
+func (p *Calculator) Execute() {
+	buffer, begin, end := p.Buffer, 0, 0
+	for token := range p.TokenTree.Tokens() {
+		switch token.Rule {
+		case RulePegText:
+			begin, end = int(token.begin), int(token.end)
+		case RuleAction0:
+			println("pushval")
+			machine.PushVal(to_int(buffer[begin:end]))
+
+		}
+	}
 }
 
 func (p *Calculator) Init() {
@@ -751,7 +767,7 @@ func (p *Calculator) Init() {
 			position, tokenIndex, depth = position3, tokenIndex3, depth3
 			return false
 		},
-		/* 2 value <- <(<[0-9]*> s)> */
+		/* 2 value <- <(<[0-9]*> s Action0)> */
 		func() bool {
 			position9, tokenIndex9, depth9 := position, tokenIndex, depth
 			{
@@ -775,6 +791,9 @@ func (p *Calculator) Init() {
 					add(RulePegText, position11)
 				}
 				if !rules[Rules]() {
+					goto l9
+				}
+				if !rules[RuleAction0]() {
 					goto l9
 				}
 				depth--
@@ -849,6 +868,14 @@ func (p *Calculator) Init() {
 			return true
 		},
 		nil,
+		/* 8 Action0 <- <{ println("pushval")
+		machine.PushVal(to_int(buffer[begin:end])) }> */
+		func() bool {
+			{
+				add(RuleAction0, position)
+			}
+			return true
+		},
 	}
 	p.rules = rules
 }

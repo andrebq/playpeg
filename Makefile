@@ -4,4 +4,4 @@ build:
 	@@echo "Building calc parser"
 	@@go build .
 	@@echo "Calling calc"
-	@@./a "( + 1 2 )"
+	@@./playpeg "( + 1 2 )"
