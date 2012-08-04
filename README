@@ -1,0 +1,3 @@
+Just learning PEG using github.com/pointlander/peg
+
+In order to compile .peg files you must "go get github.com/pointlander/peg"

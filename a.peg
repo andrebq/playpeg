@@ -1,0 +1,13 @@
+package main
+
+type Calculator Peg {
+
+}
+
+expression <- open_p operation value value close_p !.
+
+operation <- ( '+' / '-' / '*' / '/' ) s
+value <- < [0-9]* > s
+open_p <- '(' s
+close_p <- ')' s
+s <- ( ' ' )*
